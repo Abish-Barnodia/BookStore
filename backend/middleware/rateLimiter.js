@@ -10,11 +10,11 @@ export const loginLimiter = rateLimit({
     skip: (req) => process.env.NODE_ENV !== 'production',
 });
 
-// Registration rate limiter: 3 attempts per 24 hours
+// Registration rate limiter: 10 attempts per hour
 export const registerLimiter = rateLimit({
-    windowMs: 24 * 60 * 60 * 1000,
-    max: 3,
-    message: 'Too many registration attempts, please try again tomorrow',
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    message: 'Too many registration attempts, please try again in about an hour',
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req) => process.env.NODE_ENV !== 'production',

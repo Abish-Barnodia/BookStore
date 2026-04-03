@@ -60,6 +60,9 @@ if (!process.env.FIREBASE_PROJECT_ID) {
 
 const app = express()
 
+// Render runs behind a proxy; trust it so req.ip is the real client IP.
+app.set('trust proxy', 1)
+
 // Security middleware
 app.use(helmet())
 app.use(helmet.contentSecurityPolicy({
