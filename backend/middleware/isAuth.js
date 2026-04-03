@@ -8,12 +8,18 @@ const isAuth = async (req, res, next) => {
         }
 
         const verifiedToken = jwt.verify(token, process.env.JWT_SECRET)
-        if (!verifiedToken?.userID) {
+
+        // Support both regular user tokens (userID) and admin tokens (adminID)
+        const id = verifiedToken?.userID || verifiedToken?.adminID
+        if (!id) {
             return res.status(401).json({ message: "Unauthorized" })
         }
 
-        // Controllers use req.user._id (see userController)
-        req.user = { _id: verifiedToken.userID }
+        // Flag admin tokens so controllers can query the right model
+        req.user = {
+            _id: id,
+            isAdmin: Boolean(verifiedToken?.adminID),
+        }
         next()
     } catch (error) {
         console.log(error)

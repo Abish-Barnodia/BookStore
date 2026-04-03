@@ -1,4 +1,5 @@
 import User from "../model/useModel.js"
+import AdminUser from "../model/adminModel.js"
 import bcrypt from "bcrypt"
 import mongoose from "mongoose"
 
@@ -9,9 +10,15 @@ export const getUser = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized" })
         }
 
-        let user = await User.findById(userId).select(
-            "-password -resetPasswordToken -resetPasswordExpiresAt"
-        )
+        let user;
+        if (req.user?.isAdmin) {
+            user = await AdminUser.findById(userId).select("-password -accountLockedUntil -loginAttempts");
+        } else {
+            user = await User.findById(userId).select(
+                "-password -resetPasswordToken -resetPasswordExpiresAt"
+            )
+        }
+
         if (!user) {
             return res.status(404).json({ message: "User not found" })
         }   

@@ -80,7 +80,7 @@ function AdminGuard({ children }) {
         const user = res.data?.user;
         const authenticated = Boolean(user?._id || user?.email);
         setIsAuthenticated(authenticated);
-        setIsAdmin(authenticated && user?.role === 'admin');
+        setIsAdmin(authenticated && (user?.role === 'admin' || user?.role === 'super-admin'));
         setBackendError(null);
       } catch (error) {
         if (cancelled) return;
