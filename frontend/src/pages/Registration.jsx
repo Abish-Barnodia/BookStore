@@ -25,6 +25,17 @@ function Registration() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const isStrongPassword = (value) => {
+    const pwd = String(value || '');
+    return (
+      pwd.length >= 12 &&
+      /[A-Z]/.test(pwd) &&
+      /[a-z]/.test(pwd) &&
+      /[0-9]/.test(pwd) &&
+      /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(pwd)
+    );
+  };
+
   const getGoogleAuthMessage = (err) => {
     const code = err?.code || '';
     if (code === 'auth/unauthorized-domain') {
@@ -88,8 +99,8 @@ function Registration() {
       setError('Please fill in all fields');
       return;
     }
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
+    if (!isStrongPassword(formData.password)) {
+      setError('Password must be at least 12 characters and include uppercase, lowercase, number, and special character.');
       return;
     }
     if (formData.password !== formData.confirmPassword) {
