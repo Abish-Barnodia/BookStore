@@ -118,7 +118,7 @@ function Users() {
 
       <div className="section-card">
         <div className="table-wrap">
-          <table className="admin-table">
+          <table className="admin-table users-table">
             <thead>
               <tr>
                 <th>User</th><th>Role</th><th>Status</th>
@@ -131,7 +131,7 @@ function Users() {
               )}
               {filtered.map((u) => (
                 <tr key={u.id}>
-                  <td>
+                  <td data-label="User">
                     <div className="user-cell">
                       <div className="user-avatar">{u.name?.[0] || '?'}</div>
                       <div>
@@ -140,16 +140,16 @@ function Users() {
                       </div>
                     </div>
                   </td>
-                  <td><span className={`role-tag role-${u.role}`}>{u.role}</span></td>
-                  <td>
+                  <td data-label="Role"><span className={`role-tag role-${u.role}`}>{u.role}</span></td>
+                  <td data-label="Status">
                     <span className="status-badge" style={{ background: STATUS_COLOR[u.status] + '22', color: STATUS_COLOR[u.status] }}>
                       {u.status}
                     </span>
                   </td>
-                  <td>{u.orders}</td>
-                  <td className="td-bold">{u.spent > 0 ? `₹${u.spent.toLocaleString()}` : '—'}</td>
-                  <td className="td-muted">{u.joined}</td>
-                  <td>
+                  <td data-label="Orders">{u.orders}</td>
+                  <td data-label="Total Spent" className="td-bold">{u.spent > 0 ? `₹${u.spent.toLocaleString()}` : '—'}</td>
+                  <td data-label="Joined" className="td-muted">{u.joined}</td>
+                  <td data-label="Actions">
                     <div className="action-btns">
                       <button type="button" className="btn-icon btn-edit" title="View Profile" onClick={() => setDetail(u)}>👁</button>
                       <button

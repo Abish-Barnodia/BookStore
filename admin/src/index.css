@@ -1581,3 +1581,80 @@ a.btn-icon {
     height: 30px;
   }
 }
+
+@media (max-width: 768px) {
+  .users-table {
+    table-layout: auto;
+  }
+
+  .users-table thead {
+    display: none;
+  }
+
+  .users-table tbody,
+  .users-table tr,
+  .users-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .users-table tr {
+    background: #fff;
+    border: 1px solid var(--cream-250);
+    border-radius: 14px;
+    margin-bottom: .85rem;
+    padding: .7rem .8rem;
+    box-shadow: 0 3px 10px rgba(42,29,16,.05);
+  }
+
+  .users-table td {
+    border: 0;
+    padding: .45rem 0;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .users-table td[data-label] {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .8rem;
+  }
+
+  .users-table td[data-label]::before {
+    content: attr(data-label);
+    color: var(--leather-500);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    min-width: 84px;
+  }
+
+  .users-table td[data-label="User"] {
+    display: block;
+    padding-bottom: .65rem;
+    border-bottom: 1px dashed var(--cream-250);
+    margin-bottom: .35rem;
+  }
+
+  .users-table td[data-label="User"]::before {
+    display: none;
+  }
+
+  .users-table .user-cell {
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .users-table .user-cell .td-bold,
+  .users-table .user-cell .td-muted {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .users-table td[data-label="Actions"] .action-btns {
+    justify-content: flex-end;
+  }
+}
