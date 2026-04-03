@@ -17,12 +17,14 @@ import TrackOrder from './pages/TrackOrder.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import TermsOfService from './pages/TermsOfService.jsx';
 import CookiePolicy from './pages/CookiePolicy.jsx';
+import SelfHelp from './Categories/SelfHelp.jsx';
 import Fiction from './Categories/Friction.jsx';
-import NonFiction from './Categories/Non-Friction.jsx';
-import Mystery from './Categories/Mystry.jsx';
-import Philosophy from './Categories/Philosopy.jsx';
-import Romance from './Categories/Romance.jsx';
 import ScienceFiction from './Categories/ScienceFriction.jsx';
+import Finance from './Categories/Finance.jsx';
+import Classic from './Categories/Classic.jsx';
+import History from './Categories/History.jsx';
+import Fantasy from './Categories/Fantasy.jsx';
+import General from './Categories/General.jsx';
 
 function App() {
   return (
@@ -44,12 +46,14 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
+        <Route path="/self-help" element={<SelfHelp />} />
         <Route path="/fiction" element={<Fiction />} />
-        <Route path="/non-fiction" element={<NonFiction />} />
-        <Route path="/mystery" element={<Mystery />} />
-        <Route path="/philosophy" element={<Philosophy />} />
-        <Route path="/romance" element={<Romance />} />
-        <Route path="/science-fiction" element={<ScienceFiction />} />
+        <Route path="/sci-fi" element={<ScienceFiction />} />
+        <Route path="/finance" element={<Finance />} />
+        <Route path="/classic" element={<Classic />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/fantasy" element={<Fantasy />} />
+        <Route path="/general" element={<General />} />
       </Routes>
     </CartProvider>
   );

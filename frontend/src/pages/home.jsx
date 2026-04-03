@@ -75,12 +75,14 @@ const HERO_BOOKS = [
 ];
 
 const CATEGORIES = [
+  { name: 'Self-Help', icon: '🧭', path: '/self-help' },
   { name: 'Fiction', icon: '📖', path: '/fiction' },
-  { name: 'Non-Fiction', icon: '📚', path: '/non-fiction' },
-  { name: 'Science Fiction', icon: '🚀', path: '/science-fiction' },
-  { name: 'Romance', icon: '💕', path: '/romance' },
-  { name: 'Mystery', icon: '🔍', path: '/mystery' },
-  { name: 'Philosophy', icon: '🧠', path: '/philosophy' },
+  { name: 'Sci-Fi', icon: '🚀', path: '/sci-fi' },
+  { name: 'Finance', icon: '💹', path: '/finance' },
+  { name: 'Classic', icon: '🏛️', path: '/classic' },
+  { name: 'History', icon: '📜', path: '/history' },
+  { name: 'Fantasy', icon: '🧙', path: '/fantasy' },
+  { name: 'General', icon: '📚', path: '/general' },
 ];
 
 const FALLBACK_COVER = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=560&fit=crop';
