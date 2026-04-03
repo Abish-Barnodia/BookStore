@@ -3,8 +3,8 @@ import React, { createContext } from 'react';
 export const authDataContext = createContext();
 
 function AuthContextProvider({ children }) {
-  // Use Vite env when provided; default to same-origin (/api) so Vite proxy can forward to backend.
-  const serverUrlRaw = import.meta.env.VITE_SERVER_URL || '/';
+  // Use Vite env when provided; default to deployed backend URL.
+  const serverUrlRaw = import.meta.env.VITE_SERVER_URL || 'https://bookstore-backen.onrender.com';
   const serverUrl = serverUrlRaw.endsWith('/') ? serverUrlRaw : `${serverUrlRaw}/`;
 
   const value = {
