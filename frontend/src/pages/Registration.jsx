@@ -25,6 +25,19 @@ function Registration() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const shouldUseRedirectAuth = () => {
+    const ua = navigator.userAgent || '';
+    const isTouchDevice =
+      typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0;
+    const isCoarsePointer =
+      typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches;
+    return (
+      /android|iphone|ipad|ipod|mobile|wv|webview/i.test(ua) ||
+      isTouchDevice ||
+      Boolean(isCoarsePointer)
+    );
+  };
+
   const isStrongPassword = (value) => {
     const pwd = String(value || '');
     return (
@@ -135,11 +148,7 @@ function Registration() {
     try {
       setError('');
       setLoading(true);
-      const isMobileOrEmbedded = /android|iphone|ipad|ipod|mobile|wv|webview/i.test(
-        navigator.userAgent || ''
-      );
-
-      if (isMobileOrEmbedded) {
+      if (shouldUseRedirectAuth()) {
         await signInWithRedirect(auth, provider);
         return;
       }
