@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authDataContext } from '../context/authContex';
 import axios from 'axios';
-import { getRedirectResult, signInWithPopup, signInWithRedirect } from 'firebase/auth';
+import { signInWithPopup } from 'firebase/auth';
 
 import { auth, provider } from "../utils/Firebase";
 import { getApiErrorMessage } from "../utils/apiError";
@@ -24,19 +24,6 @@ function Registration() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const shouldUseRedirectAuth = () => {
-    const ua = navigator.userAgent || '';
-    const isTouchDevice =
-      typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0;
-    const isCoarsePointer =
-      typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches;
-    return (
-      /android|iphone|ipad|ipod|mobile|wv|webview/i.test(ua) ||
-      isTouchDevice ||
-      Boolean(isCoarsePointer)
-    );
-  };
 
   const isStrongPassword = (value) => {
     const pwd = String(value || '');
@@ -74,31 +61,7 @@ function Registration() {
     navigate(redirectTo);
   };
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const handleRedirectAuth = async () => {
-      try {
-        const credential = await getRedirectResult(auth);
-        if (!cancelled && credential?.user) {
-          setLoading(true);
-          await handleGoogleCredential(credential);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.error('googleSignup redirect', err);
-          setError(getGoogleAuthMessage(err));
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    handleRedirectAuth();
-    return () => {
-      cancelled = true;
-    };
-  }, [navigate, redirectTo, serverUrl]);
+  useEffect(() => {}, [navigate, redirectTo, serverUrl]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -131,6 +94,7 @@ function Registration() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          confirmPassword: formData.confirmPassword,
         },
         { withCredentials: true }
       );
@@ -148,21 +112,7 @@ function Registration() {
     try {
       setError('');
       setLoading(true);
-      if (shouldUseRedirectAuth()) {
-        await signInWithRedirect(auth, provider);
-        return;
-      }
-
-      let credential;
-      try {
-        credential = await signInWithPopup(auth, provider);
-      } catch (err) {
-        if (err?.code === 'auth/popup-blocked' || err?.code === 'auth/popup-closed-by-user') {
-          await signInWithRedirect(auth, provider);
-          return;
-        }
-        throw err;
-      }
+      const credential = await signInWithPopup(auth, provider);
       await handleGoogleCredential(credential);
     } catch (error) {
       console.error('googleSignup', error);
