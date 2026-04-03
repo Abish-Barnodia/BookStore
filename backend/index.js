@@ -103,7 +103,20 @@ const isLocalDevOrigin = (origin) => {
     const parsed = new URL(origin)
     return (
       parsed.protocol === 'http:' &&
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1')
+      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname.startsWith('192.168.'))
+    )
+  } catch {
+    return false
+  }
+}
+
+const isBookstoreRenderOrigin = (origin) => {
+  try {
+    const parsed = new URL(origin)
+    return (
+      parsed.protocol === 'https:' &&
+      parsed.hostname.endsWith('.onrender.com') &&
+      parsed.hostname.startsWith('bookstore-')
     )
   } catch {
     return false
@@ -115,7 +128,7 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. Postman, curl, mobile apps)
       if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin) || isLocalDevOrigin(origin)) {
+      if (allowedOrigins.includes(origin) || isLocalDevOrigin(origin) || isBookstoreRenderOrigin(origin)) {
         return callback(null, true)
       }
       callback(new Error(`CORS: origin '${origin}' not allowed`))
