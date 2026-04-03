@@ -15,7 +15,9 @@ const authCookieOptions = {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "strict" : "lax",
+    // Render deploys use different origins for frontend/admin vs backend,
+    // so production cookies must allow cross-site credentialed requests.
+    sameSite: isProduction ? "none" : "lax",
     path: "/",
 };
 
