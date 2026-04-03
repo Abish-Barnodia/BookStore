@@ -99,8 +99,8 @@ function Registration() {
         { withCredentials: true }
       );
       console.log(res.data);
-      // After creating an account, send user back to login.
-      navigate('/login', { state: { redirectTo } });
+      // Registration already creates a session cookie; continue as logged in.
+      navigate(redirectTo);
     } catch (err) {
       setError(getApiErrorMessage(err, 'Unable to connect to server'));
     } finally {
