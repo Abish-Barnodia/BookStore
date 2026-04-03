@@ -36,10 +36,12 @@ if (
 }
 
 const normalizeOrigin = (value) => String(value || '').trim().replace(/\/$/, '')
+const renderFrontendUrl = 'https://bookstore-frontend-v8pe.onrender.com'
 
 const port = process.env.PORT || 8000
 const clientUrl = normalizeOrigin(process.env.CLIENT_URL)
 const adminUrl = normalizeOrigin(process.env.ADMIN_URL)
+const frontendUrl = normalizeOrigin(clientUrl || renderFrontendUrl)
 if (clientUrl) {
   console.log("[config] CLIENT_URL =", clientUrl, "(reset links will use this base)")
 } else {
@@ -64,7 +66,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'"],
     styleSrc: ["'self'", "'unsafe-inline'"],
     imgSrc: ["'self'", "data:", "https:", "blob:"],
-    connectSrc: ["'self'", clientUrl],
+    connectSrc: ["'self'", frontendUrl],
   }
 }))
 app.use(helmet.hsts({
@@ -89,6 +91,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://localhost:5174',           // admin panel (vite default in admin/)
   'http://127.0.0.1:5174',
+  frontendUrl,
   clientUrl,
   adminUrl,
 ].filter(Boolean)

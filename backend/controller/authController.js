@@ -38,6 +38,7 @@ const toPublicUser = (userDoc) => {
 };
 
 const normalizeEmail = (email) => (typeof email === "string" ? email.trim().toLowerCase() : "");
+const fallbackClientUrl = "https://bookstore-frontend-v8pe.onrender.com";
 
 const generateResetToken = () => crypto.randomBytes(32).toString("hex");
 const hashResetToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
@@ -46,7 +47,7 @@ const buildResetUrl = (req, resetToken) => {
     const raw =
         process.env.CLIENT_URL ||
         req.headers.origin ||
-        "http://localhost:5173";
+        fallbackClientUrl;
     const base = String(raw).replace(/\/$/, "");
     return `${base}/reset-password?token=${encodeURIComponent(resetToken)}`;
 };
