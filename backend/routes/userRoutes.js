@@ -6,7 +6,7 @@ import { validate, updateProfileValidation } from "../middleware/validation.js"
 
 const userRoutes = express.Router()
 
-userRoutes.post("/get-user", isAuth, requireUserAccess(), getUser)
+userRoutes.post("/get-user", isAuth, getUser)
 userRoutes.put("/update-user", isAuth, requireUserAccess(), validate(updateProfileValidation), updateUser)
 
 export default userRoutes

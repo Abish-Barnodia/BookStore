@@ -85,12 +85,14 @@ function AdminGuard({ children }) {
       } catch (error) {
         if (cancelled) return;
 
+        const status = error.response?.status;
+
         // Check if this is a connection/backend error (502, 503, ECONNREFUSED, timeout)
         const isBackendDown = 
           error.code === 'ECONNREFUSED' ||
           error.code === 'ETIMEDOUT' ||
-          error.response?.status === 502 ||
-          error.response?.status === 503 ||
+          status === 502 ||
+          status === 503 ||
           error.message?.includes('timeout');
 
         if (isBackendDown && retryCount < MAX_RETRIES) {
@@ -105,14 +107,21 @@ function AdminGuard({ children }) {
         // After max retries or non-backend error, show error
         if (isBackendDown) {
           setBackendError('Backend server is not running. Please start the backend first (npm run dev in backend/)');
-        } else if (error.response?.status === 401) {
+          setIsAuthenticated(false);
+          setIsAdmin(false);
+        } else if (status === 401) {
           setBackendError(null); // Not logged in is fine
+          setIsAuthenticated(false);
+          setIsAdmin(false);
+        } else if (status === 403) {
+          setBackendError(null); // Forbidden is an auth/role issue, not a connectivity issue
+          setIsAuthenticated(true);
+          setIsAdmin(false);
         } else {
           setBackendError('Failed to connect to backend. Please check if the server is running.');
+          setIsAuthenticated(false);
+          setIsAdmin(false);
         }
-
-        setIsAuthenticated(false);
-        setIsAdmin(false);
       } finally {
         if (!cancelled) setChecking(false);
       }
