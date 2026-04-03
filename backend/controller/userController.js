@@ -13,10 +13,18 @@ export const getUser = async (req, res) => {
         let user;
         if (req.user?.isAdmin) {
             user = await AdminUser.findById(userId).select("-password -accountLockedUntil -loginAttempts");
+            if (!user) {
+                user = await User.findById(userId).select(
+                    "-password -resetPasswordToken -resetPasswordExpiresAt"
+                )
+            }
         } else {
             user = await User.findById(userId).select(
                 "-password -resetPasswordToken -resetPasswordExpiresAt"
             )
+            if (!user) {
+                user = await AdminUser.findById(userId).select("-password -accountLockedUntil -loginAttempts");
+            }
         }
 
         if (!user) {

@@ -61,6 +61,10 @@ export default function Profile() {
       setError('');
       try {
         const u = await fetchUser();
+        if (!u) {
+          setError('Could not load user profile. Please refresh and try again.');
+          return;
+        }
         setUser(u);
         setForm((prev) => ({
           ...prev,
@@ -82,7 +86,11 @@ export default function Profile() {
           setError(orderErr?.response?.data?.message || 'Could not load your order history right now.');
         }
       } catch (err) {
-        navigate('/login', { state: { redirectTo: '/profile' } });
+        if (err?.response?.status === 401) {
+          navigate('/login', { state: { redirectTo: '/profile' } });
+          return;
+        }
+        setError(err?.response?.data?.message || 'Could not load profile right now. Please retry.');
       } finally {
         setLoading(false);
       }
