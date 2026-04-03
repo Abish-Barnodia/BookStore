@@ -35,8 +35,11 @@ if (
   )
 }
 
+const normalizeOrigin = (value) => String(value || '').trim().replace(/\/$/, '')
+
 const port = process.env.PORT || 8000
-const clientUrl = (process.env.CLIENT_URL || "").trim()
+const clientUrl = normalizeOrigin(process.env.CLIENT_URL)
+const adminUrl = normalizeOrigin(process.env.ADMIN_URL)
 if (clientUrl) {
   console.log("[config] CLIENT_URL =", clientUrl, "(reset links will use this base)")
 } else {
@@ -86,7 +89,8 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://localhost:5174',           // admin panel (vite default in admin/)
   'http://127.0.0.1:5174',
-  process.env.CLIENT_URL,
+  clientUrl,
+  adminUrl,
 ].filter(Boolean)
 
 const isLocalDevOrigin = (origin) => {
