@@ -1,0 +1,26 @@
+[0m[0m
+[0m[4mC:\Users\Abish Barnodia\Desktop\ecommerece\frontend\src\Categories\BookDetail.jsx[24m[0m
+[0m  [2m11:53[22m  [31merror[39m  'onBookUpdated' is defined but never used                                                   [2mno-unused-vars[22m[0m
+[0m  [2m16:19[22m  [31merror[39m  'setReviews' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  [2mno-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\Abish Barnodia\Desktop\ecommerece\frontend\src\context\CartContext.jsx[24m[0m
+[0m  [2m55:17[22m  [31merror[39m  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  [2mreact-refresh/only-export-components[22m[0m
+[0m[0m
+[0m[4mC:\Users\Abish Barnodia\Desktop\ecommerece\frontend\src\context\authContex.jsx[24m[0m
+[0m  [2m3:14[22m  [31merror[39m  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file  [2mreact-refresh/only-export-components[22m[0m
+[0m[0m
+[0m[4mC:\Users\Abish Barnodia\Desktop\ecommerece\frontend\src\context\userContext.jsx[24m[0m
+[0m  [2m10:14[22m  [31merror[39m  Parsing error: Identifier 'userDataContext' has already been declared[0m
+[0m[0m
+[0m[4mC:\Users\Abish Barnodia\Desktop\ecommerece\frontend\src\pages\Login.jsx[24m[0m
+[0m  [2m70:6[22m  [33mwarning[39m  React Hook useEffect has a missing dependency: 'handleGoogleCredential'. Either include it or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m[0m
+[0m[4mC:\Users\Abish Barnodia\Desktop\ecommerece\frontend\src\pages\Profile.jsx[24m[0m
+[0m  [2m84:16[22m  [31merror[39m    'err' is defined but never used                                                                                                   [2mno-unused-vars[22m[0m
+[0m  [2m92:6[22m   [33mwarning[39m  React Hook useEffect has missing dependencies: 'fetchOrders' and 'fetchUser'. Either include them or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m[0m
+[0m[4mC:\Users\Abish Barnodia\Desktop\ecommerece\frontend\src\pages\Registration.jsx[24m[0m
+[0m  [2m77:6[22m  [33mwarning[39m  React Hook useEffect has a missing dependency: 'handleGoogleCredential'. Either include it or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m[0m
+[0m[31m[1m✖ 9 problems (6 errors, 3 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[0m

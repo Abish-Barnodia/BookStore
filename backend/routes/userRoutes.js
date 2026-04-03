@@ -1,0 +1,11 @@
+import express from "express"
+import { getUser, updateUser } from "../controller/userController.js"
+import isAuth from "../middleware/isAuth.js"
+import { validate, updateProfileValidation } from "../middleware/validation.js"
+
+const userRoutes = express.Router()
+
+userRoutes.post("/get-user", isAuth, getUser)
+userRoutes.put("/update-user", isAuth, validate(updateProfileValidation), updateUser)
+
+export default userRoutes
