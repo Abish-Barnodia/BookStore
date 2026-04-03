@@ -74,7 +74,6 @@ const adminUserSchema = new mongoose.Schema(
 );
 
 // Index for faster lookups
-adminUserSchema.index({ email: 1 });
 adminUserSchema.index({ status: 1 });
 
 const AdminUser = mongoose.model("AdminUser", adminUserSchema);
