@@ -104,9 +104,23 @@ const allowedOrigins = [
 const isLocalDevOrigin = (origin) => {
   try {
     const parsed = new URL(origin)
+    const hostname = parsed.hostname
+    
+    // Check if private IP (192.168, 10.x.x.x, 172.16-31.x.x.x)
+    const isPrivateIP = (ip) => {
+      const parts = ip.split('.')
+      if (parts.length !== 4) return false
+      const [a, b] = [parseInt(parts[0], 10), parseInt(parts[1], 10)]
+      return (
+        a === 192 && b === 168 ||  // 192.168.0.0/16
+        a === 10 ||                 // 10.0.0.0/8
+        a === 172 && b >= 16 && b <= 31  // 172.16.0.0/12
+      )
+    }
+    
     return (
       parsed.protocol === 'http:' &&
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname.startsWith('192.168.'))
+      (hostname === 'localhost' || hostname === '127.0.0.1' || isPrivateIP(hostname))
     )
   } catch {
     return false

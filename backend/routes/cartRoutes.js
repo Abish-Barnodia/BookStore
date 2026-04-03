@@ -1,5 +1,6 @@
 import express from "express"
 import isAuth from "../middleware/isAuth.js"
+import requireUserAccess from "../middleware/requireUserAccess.js"
 import { validate, cartItemValidation } from "../middleware/validation.js"
 import {
     getCart,
@@ -10,9 +11,9 @@ import {
 
 const cartRoutes = express.Router()
 
-cartRoutes.get("/get", isAuth, getCart)
-cartRoutes.post("/add", isAuth, validate(cartItemValidation), addToCart)
-cartRoutes.put("/update", isAuth, validate(cartItemValidation), updateCart)
-cartRoutes.delete("/remove", isAuth, validate(cartItemValidation), removeFromCart)
+cartRoutes.get("/get", isAuth, requireUserAccess(), getCart)
+cartRoutes.post("/add", isAuth, requireUserAccess(), validate(cartItemValidation), addToCart)
+cartRoutes.put("/update", isAuth, requireUserAccess(), validate(cartItemValidation), updateCart)
+cartRoutes.delete("/remove", isAuth, requireUserAccess(), validate(cartItemValidation), removeFromCart)
 
 export default cartRoutes
