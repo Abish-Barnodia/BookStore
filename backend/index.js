@@ -37,10 +37,12 @@ if (
 
 const normalizeOrigin = (value) => String(value || '').trim().replace(/\/$/, '')
 const renderFrontendUrl = 'https://bookstore-frontend-v8pe.onrender.com'
+const renderAdminUrl = 'https://bookstore-admin-3wc7.onrender.com'
 
 const port = process.env.PORT || 8000
 const clientUrl = normalizeOrigin(process.env.CLIENT_URL)
 const adminUrl = normalizeOrigin(process.env.ADMIN_URL)
+const effectiveAdminUrl = normalizeOrigin(adminUrl || renderAdminUrl)
 const frontendUrl = normalizeOrigin(clientUrl || renderFrontendUrl)
 if (clientUrl) {
   console.log("[config] CLIENT_URL =", clientUrl, "(reset links will use this base)")
@@ -93,7 +95,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5174',
   frontendUrl,
   clientUrl,
-  adminUrl,
+  effectiveAdminUrl,
 ].filter(Boolean)
 
 const isLocalDevOrigin = (origin) => {
