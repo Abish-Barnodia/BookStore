@@ -139,7 +139,7 @@ function PlaceOrder() {
               if (verifyRes.data?.success) {
                 setSuccess('Payment successful! Order placed.');
                 clearCart();
-                setTimeout(() => navigate('/'), 1200);
+                setTimeout(() => navigate('/dashboard'), 1200);
               } else {
                 setError(verifyRes.data?.message || 'Payment verification failed');
               }
@@ -174,7 +174,7 @@ function PlaceOrder() {
 
         setSuccess('Order placed successfully!');
         clearCart();
-        setTimeout(() => navigate('/'), 1200);
+        setTimeout(() => navigate('/dashboard'), 1200);
       }
     } catch (err) {
       setError(
