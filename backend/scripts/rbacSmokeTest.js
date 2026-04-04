@@ -43,39 +43,63 @@ async function runUnauthChecks() {
   await expectStatus("/api/product/list", 200);
 }
 
-async function runOptionalRoleChecks() {
+async function runRoleChecks() {
   const userEmail = process.env.TEST_USER_EMAIL;
   const userPassword = process.env.TEST_USER_PASSWORD;
+  const adminEmail = process.env.TEST_ADMIN_EMAIL;
+  const adminPassword = process.env.TEST_ADMIN_PASSWORD;
 
   if (!userEmail || !userPassword) {
-    console.log("[rbac] Skipping role checks: TEST_USER_EMAIL/TEST_USER_PASSWORD not provided.");
+    console.log("[rbac] Skipping customer check: TEST_USER_EMAIL/TEST_USER_PASSWORD not provided.");
+  } else {
+    const loginRes = await fetch(url("/api/auth/login"), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: userEmail, password: userPassword }),
+    });
+
+    assert.equal(loginRes.status, 200, `[rbac] user login failed with status ${loginRes.status}`);
+
+    const setCookie = loginRes.headers.get("set-cookie") || "";
+    assert.ok(setCookie.includes("token="), "[rbac] user login did not return auth cookie");
+
+    const adminRes = await fetch(url("/api/admin/stats"), {
+      method: "GET",
+      headers: { cookie: setCookie },
+    });
+
+    assert.equal(adminRes.status, 403, `[rbac] customer should not access admin route, got ${adminRes.status}`);
+  }
+
+  if (!adminEmail || !adminPassword) {
+    console.log("[rbac] Skipping admin check: TEST_ADMIN_EMAIL/TEST_ADMIN_PASSWORD not provided.");
     return;
   }
 
-  const loginRes = await fetch(url("/api/auth/login"), {
+  const adminLoginRes = await fetch(url("/api/auth/admin-login"), {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ email: userEmail, password: userPassword }),
+    body: JSON.stringify({ email: adminEmail, password: adminPassword }),
   });
 
-  assert.equal(loginRes.status, 200, `[rbac] user login failed with status ${loginRes.status}`);
+  assert.equal(adminLoginRes.status, 200, `[rbac] admin login failed with status ${adminLoginRes.status}`);
 
-  const setCookie = loginRes.headers.get("set-cookie") || "";
-  assert.ok(setCookie.includes("token="), "[rbac] login did not return auth cookie");
+  const adminCookie = adminLoginRes.headers.get("set-cookie") || "";
+  assert.ok(adminCookie.includes("token="), "[rbac] admin login did not return auth cookie");
 
-  const adminRes = await fetch(url("/api/admin/stats"), {
+  const statsRes = await fetch(url("/api/admin/stats"), {
     method: "GET",
-    headers: { cookie: setCookie },
+    headers: { cookie: adminCookie },
   });
 
-  assert.equal(adminRes.status, 403, `[rbac] customer should not access admin route, got ${adminRes.status}`);
+  assert.equal(statsRes.status, 200, `[rbac] admin should access admin route, got ${statsRes.status}`);
 }
 
 (async () => {
   try {
     console.log(`[rbac] Running RBAC smoke tests against ${BASE_URL}`);
     await runUnauthChecks();
-    await runOptionalRoleChecks();
+    await runRoleChecks();
     console.log("[rbac] PASS: RBAC smoke checks succeeded.");
     process.exit(0);
   } catch (error) {
