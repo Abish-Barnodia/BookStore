@@ -274,7 +274,7 @@ export default function Profile() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="ornament">⚜</div>
-        <Link to="/" className="back-link">
+        <Link to="/dashboard" className="back-link">
           ← Back to shop
         </Link>
         <h1 className="auth-title">My Profile</h1>
