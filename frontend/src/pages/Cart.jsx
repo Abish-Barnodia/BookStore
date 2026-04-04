@@ -40,7 +40,7 @@ export default function Cart() {
       {/* Header */}
       <div className="cart-header">
         <div className="cart-header-left">
-          <button className="cat-back-btn" onClick={() => navigate(-1)}>←</button>
+          <button className="cat-back-btn" onClick={() => navigate('/dashboard')}>←</button>
           <div>
             <h1 className="cart-title">🛒 Your Cart</h1>
             <p className="cart-subtitle">{totalItems} {totalItems === 1 ? 'item' : 'items'} in cart</p>
@@ -143,7 +143,7 @@ export default function Cart() {
                   Proceed to Checkout →
                 </button>
 
-                <button className="cart-continue-btn" onClick={() => navigate('/')}>
+                <button className="cart-continue-btn" onClick={() => navigate('/dashboard')}>
                   Continue Shopping
                 </button>
               </div>
