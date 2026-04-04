@@ -256,7 +256,7 @@ function Home() {
     }
     clearAuthToken();
     setAuthUser(null);
-    navigate('/');
+    navigate('/login', { replace: true });
   };
 
   const renderStars = (rating) => {

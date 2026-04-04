@@ -32,8 +32,8 @@ function App() {
   return (
     <CartProvider>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/dashboard" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Registration />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
