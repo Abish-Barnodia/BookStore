@@ -14,7 +14,7 @@ const NAV_ITEMS = [
 function Sidebar({ open, onNavigate }) {
   const navigate = useNavigate();
   const { serverUrl } = useContext(authDataContext);
-  const storefrontBase = (import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5173').replace(/\/$/, '');
+  const storefrontBase = (import.meta.env.VITE_STOREFRONT_URL || 'https://bookstore-frontend-v8pe.onrender.com').replace(/\/$/, '');
   const sharedLoginUrl = `${storefrontBase}/login`;
 
   const handleLogout = async () => {

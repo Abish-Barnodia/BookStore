@@ -14,7 +14,7 @@ import { authDataContext } from './context/AuthContext';
 import './App.css';
 
 function SharedLoginRedirect({ redirectTo = '/' }) {
-  const storefrontBase = (import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5173').replace(/\/$/, '');
+  const storefrontBase = (import.meta.env.VITE_STOREFRONT_URL || 'https://bookstore-frontend-v8pe.onrender.com').replace(/\/$/, '');
 
   useEffect(() => {
     const url = `${storefrontBase}/login?from=admin&redirectTo=${encodeURIComponent(redirectTo)}`;

@@ -11,7 +11,7 @@ function AdminPortal() {
   const [error, setError] = useState('');
 
   const adminTargetUrl = useMemo(() => {
-    const adminBaseUrl = (import.meta.env.VITE_ADMIN_APP_URL || 'http://localhost:5174').replace(/\/$/, '');
+    const adminBaseUrl = (import.meta.env.VITE_ADMIN_APP_URL || 'https://bookstore-admin-3wc7.onrender.com').replace(/\/$/, '');
     const pathWithoutAdmin = location.pathname.replace(/^\/admin/, '') || '/';
     const query = location.search || '';
     return `${adminBaseUrl}${pathWithoutAdmin.startsWith('/') ? pathWithoutAdmin : `/${pathWithoutAdmin}`}${query}`;

@@ -15,7 +15,7 @@ function Login() {
   const searchParams = new URLSearchParams(location.search || '');
   const adminRedirectTo = searchParams.get('redirectTo') || '/';
   const redirectTo = location.state?.redirectTo || searchParams.get('redirectTo') || '/dashboard';
-  const adminAppBaseUrl = (import.meta.env.VITE_ADMIN_APP_URL || 'http://localhost:5174').replace(/\/$/, '');
+  const adminAppBaseUrl = (import.meta.env.VITE_ADMIN_APP_URL || 'https://bookstore-admin-3wc7.onrender.com').replace(/\/$/, '');
 
   const getAdminRoute = () => {
     const normalized = adminRedirectTo.startsWith('/') ? adminRedirectTo : `/${adminRedirectTo}`;
