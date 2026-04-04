@@ -369,6 +369,107 @@ export const Login = async (req, res) => {
             return res.status(400).json({ success: false, message: "Enter a valid email" });
         }
 
+        const admin = await AdminUser.findOne({ email });
+        if (admin) {
+            if (admin.accountLockedUntil && admin.accountLockedUntil > new Date()) {
+                const lockTimeRemaining = Math.ceil(
+                    (admin.accountLockedUntil - new Date()) / 1000 / 60
+                );
+                await logAudit({
+                    action: "LOGIN_FAILED",
+                    actorEmail: email,
+                    actor: admin._id,
+                    actorRole: "admin",
+                    resourceType: "Auth",
+                    status: "FAILURE",
+                    errorMessage: `Account locked for ${lockTimeRemaining} minutes`,
+                    ipAddress,
+                    userAgent,
+                });
+                return res.status(429).json({
+                    success: false,
+                    message: `Account temporarily locked. Try again in ${lockTimeRemaining} minutes`,
+                });
+            }
+
+            if (admin.status !== "active") {
+                await logAudit({
+                    action: "LOGIN_FAILED",
+                    actor: admin._id,
+                    actorEmail: email,
+                    actorRole: "admin",
+                    resourceType: "Auth",
+                    status: "FAILURE",
+                    errorMessage: "Admin account is inactive",
+                    ipAddress,
+                    userAgent,
+                });
+                return res.status(403).json({
+                    success: false,
+                    message: "This admin account is inactive",
+                });
+            }
+
+            const isAdminPasswordMatch = await bcrypt.compare(password, admin.password);
+            if (!isAdminPasswordMatch) {
+                admin.loginAttempts = (admin.loginAttempts || 0) + 1;
+                if (admin.loginAttempts >= 5) {
+                    admin.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
+                }
+                await admin.save();
+
+                await logAudit({
+                    action: "LOGIN_FAILED",
+                    actor: admin._id,
+                    actorEmail: email,
+                    actorRole: "admin",
+                    resourceType: "Auth",
+                    status: "FAILURE",
+                    errorMessage: `Invalid password. Attempt ${admin.loginAttempts}/5`,
+                    ipAddress,
+                    userAgent,
+                });
+
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid email or password",
+                });
+            }
+
+            admin.loginAttempts = 0;
+            admin.accountLockedUntil = null;
+            admin.lastLogin = new Date();
+            await admin.save();
+
+            const token = await genTokenAdmin(admin._id);
+            if (!token) {
+                return res.status(500).json({ success: false, message: "Could not create session" });
+            }
+            setAuthCookie(res, token);
+
+            await logAudit({
+                action: "LOGIN",
+                actor: admin._id,
+                actorEmail: email,
+                actorRole: admin.role,
+                resourceType: "Auth",
+                status: "SUCCESS",
+                ipAddress,
+                userAgent,
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Login successful",
+                user: {
+                    _id: admin._id,
+                    email: admin.email,
+                    name: admin.name,
+                    role: admin.role,
+                },
+            });
+        }
+
         const user = await User.findOne({ email });
         if (!user) {
             await logAudit({
@@ -384,13 +485,6 @@ export const Login = async (req, res) => {
             return res.status(401).json({
                 success: false,
                 message: "Invalid email or password",
-            });
-        }
-
-        if (user.role === "admin") {
-            return res.status(403).json({
-                success: false,
-                message: "Administrator accounts must sign in through the admin portal, not the shop.",
             });
         }
 

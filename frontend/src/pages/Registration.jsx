@@ -13,7 +13,7 @@ function Registration() {
   const { serverUrl } = useContext(authDataContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.redirectTo || '/';
+  const redirectTo = location.state?.redirectTo || '/dashboard';
   const [formData, setFormData] = useState({
     name: '',
     email: '',

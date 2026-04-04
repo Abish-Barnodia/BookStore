@@ -14,6 +14,8 @@ const NAV_ITEMS = [
 function Sidebar({ open, onNavigate }) {
   const navigate = useNavigate();
   const { serverUrl } = useContext(authDataContext);
+  const storefrontBase = (import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5173').replace(/\/$/, '');
+  const sharedLoginUrl = `${storefrontBase}/login`;
 
   const handleLogout = async () => {
     try {
@@ -21,7 +23,7 @@ function Sidebar({ open, onNavigate }) {
     } catch {
       /* still leave admin UI */
     }
-    navigate('/login');
+    window.location.replace(sharedLoginUrl);
   };
 
   return (

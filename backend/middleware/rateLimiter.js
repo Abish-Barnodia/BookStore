@@ -22,9 +22,16 @@ export const registerLimiter = rateLimit({
 
 // Password reset rate limiter: 3 attempts per hour
 export const forgotPasswordLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000,
-    max: 3,
-    message: 'Too many password reset attempts, please try again later',
+    // Keep abuse protection, but allow reasonable retries during real user issues.
+    windowMs: 10 * 60 * 1000,
+    max: 10,
+    handler: (req, res) => {
+        const retryAfter = Math.ceil((req.rateLimit?.resetTime?.getTime() - Date.now()) / 1000);
+        return res.status(429).json({
+            success: false,
+            message: `Too many password reset attempts. Try again in ${Math.max(retryAfter || 0, 0)} seconds.`,
+        });
+    },
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req) => process.env.NODE_ENV !== 'production',

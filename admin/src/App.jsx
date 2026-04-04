@@ -10,9 +10,19 @@ import Orders    from './pages/Orders';
 import Users     from './pages/Users';
 import Profile   from './pages/Profile';
 import AccessDenied from './pages/AccessDenied';
-import Login     from './pages/Login';
 import { authDataContext } from './context/AuthContext';
 import './App.css';
+
+function SharedLoginRedirect({ redirectTo = '/' }) {
+  const storefrontBase = (import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5173').replace(/\/$/, '');
+
+  useEffect(() => {
+    const url = `${storefrontBase}/login?from=admin&redirectTo=${encodeURIComponent(redirectTo)}`;
+    window.location.replace(url);
+  }, [redirectTo, storefrontBase]);
+
+  return null;
+}
 
 /* Wrap every protected page with Sidebar + Navbar */
 function AdminLayout({ children }) {
@@ -177,7 +187,7 @@ function AdminGuard({ children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ redirectTo: location.pathname }} />;
+    return <SharedLoginRedirect redirectTo={`${location.pathname}${location.search || ''}`} />;
   }
 
   if (!isAdmin) {
@@ -191,7 +201,7 @@ function App() {
   return (
     <Routes>
       {/* Public */}
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<SharedLoginRedirect />} />
 
       {/* Protected admin routes */}
       <Route path="/" element={

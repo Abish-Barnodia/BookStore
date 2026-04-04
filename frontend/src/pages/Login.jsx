@@ -12,7 +12,15 @@ function Login() {
   const { serverUrl } = useContext(authDataContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.redirectTo || '/';
+  const searchParams = new URLSearchParams(location.search || '');
+  const adminRedirectTo = searchParams.get('redirectTo') || '/';
+  const redirectTo = location.state?.redirectTo || searchParams.get('redirectTo') || '/dashboard';
+  const adminAppBaseUrl = (import.meta.env.VITE_ADMIN_APP_URL || 'http://localhost:5174').replace(/\/$/, '');
+
+  const getAdminRoute = () => {
+    const normalized = adminRedirectTo.startsWith('/') ? adminRedirectTo : `/${adminRedirectTo}`;
+    return `${adminAppBaseUrl}${normalized}`;
+  };
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,11 +43,16 @@ function Login() {
   const handleGoogleCredential = async (credential) => {
     if (!credential?.user) return;
     const idToken = await credential.user.getIdToken();
-    await axios.post(
+    const res = await axios.post(
       serverUrl + 'api/auth/google-login',
       { idToken },
       { withCredentials: true }
     );
+    const role = res?.data?.user?.role;
+    if (role === 'admin' || role === 'super-admin') {
+      window.location.href = getAdminRoute();
+      return;
+    }
     navigate(redirectTo);
   };
 
@@ -65,9 +78,35 @@ function Login() {
         formData,
         { withCredentials: true }
       );
-      console.log(res.data);
+      const role = res?.data?.user?.role;
+      if (role === 'admin' || role === 'super-admin') {
+        window.location.href = getAdminRoute();
+        return;
+      }
       navigate(redirectTo);
     } catch (err) {
+      const status = err?.response?.status;
+      const message = String(err?.response?.data?.message || '').toLowerCase();
+
+      // Compatibility fallback for older backends that still block admin on /login.
+      if (status === 403 && message.includes('admin portal')) {
+        try {
+          const adminRes = await axios.post(
+            serverUrl + 'api/auth/admin-login',
+            formData,
+            { withCredentials: true }
+          );
+          const adminRole = adminRes?.data?.user?.role;
+          if (adminRole === 'admin' || adminRole === 'super-admin') {
+            window.location.href = getAdminRoute();
+            return;
+          }
+        } catch (adminErr) {
+          setError(getApiErrorMessage(adminErr, 'Unable to connect to server'));
+          return;
+        }
+      }
+
       setError(getApiErrorMessage(err, 'Unable to connect to server'));
     } finally {
       setLoading(false);
@@ -97,14 +136,29 @@ function Login() {
 
         {/* Title */}
         <h1 className="auth-title">Welcome Back</h1>
-        <p className="auth-subtitle">Continue your literary adventure</p>
+        <p className="auth-subtitle">One sign in for users and admins</p>
         <hr className="auth-divider" />
 
         {/* Error */}
         {error && <div className="error-message">{error}</div>}
 
         {/* Form */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete="off">
+          {/* Decoy fields to absorb aggressive browser autofill */}
+          <input
+            type="text"
+            name="fake-username"
+            autoComplete="username"
+            tabIndex={-1}
+            style={{ position: 'absolute', opacity: 0, height: 0, pointerEvents: 'none' }}
+          />
+          <input
+            type="password"
+            name="fake-password"
+            autoComplete="new-password"
+            tabIndex={-1}
+            style={{ position: 'absolute', opacity: 0, height: 0, pointerEvents: 'none' }}
+          />
           <div className="form-group">
             <label htmlFor="login-email" className="form-label">Email Address</label>
             <input
@@ -115,7 +169,10 @@ function Login() {
               placeholder="john@example.com"
               value={formData.email}
               onChange={handleChange}
-              autoComplete="email"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
             />
           </div>
 
@@ -130,7 +187,7 @@ function Login() {
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
               <button
                 type="button"

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import Home from './pages/home.jsx';
-import Login from './pages/Login.jsx';
+import Login from './pages/login.jsx';
 import Registration from './pages/Registration.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
@@ -17,6 +17,7 @@ import TrackOrder from './pages/TrackOrder.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import TermsOfService from './pages/TermsOfService.jsx';
 import CookiePolicy from './pages/CookiePolicy.jsx';
+import AdminPortal from './pages/AdminPortal.jsx';
 import SelfHelp from './Categories/SelfHelp.jsx';
 import Fiction from './Categories/Friction.jsx';
 import ScienceFiction from './Categories/ScienceFriction.jsx';
@@ -30,7 +31,8 @@ function App() {
   return (
     <CartProvider>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/dashboard" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Registration />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -46,6 +48,7 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
+        <Route path="/admin/*" element={<AdminPortal />} />
         <Route path="/self-help" element={<SelfHelp />} />
         <Route path="/fiction" element={<Fiction />} />
         <Route path="/sci-fi" element={<ScienceFiction />} />
