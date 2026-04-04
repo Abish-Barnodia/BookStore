@@ -559,10 +559,10 @@ function Home() {
           <div>
             <h4 className="footer-heading">Quick Links</h4>
             <ul className="footer-links">
-              <li><a href="#home">Home</a></li>
-              <li><a href="#featured">Books</a></li>
-              <li><a href="#categories">Categories</a></li>
-              <li><a href="#newsletter">Contact</a></li>
+              <li><button onClick={() => scrollToSection('home')} className="footer-link-btn">Home</button></li>
+              <li><button onClick={() => scrollToSection('featured')} className="footer-link-btn">Books</button></li>
+              <li><button onClick={() => scrollToSection('categories')} className="footer-link-btn">Categories</button></li>
+              <li><button onClick={() => navigate('/contact')} className="footer-link-btn">Contact</button></li>
             </ul>
           </div>
           <div>

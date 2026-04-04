@@ -14,6 +14,7 @@ import FAQ from './pages/FAQ.jsx';
 import Shipping from './pages/Shipping.jsx';
 import Returns from './pages/Returns.jsx';
 import TrackOrder from './pages/TrackOrder.jsx';
+import Contact from './pages/Contact.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import TermsOfService from './pages/TermsOfService.jsx';
 import CookiePolicy from './pages/CookiePolicy.jsx';
@@ -31,8 +32,8 @@ function App() {
   return (
     <CartProvider>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/dashboard" element={<Home />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Registration />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -45,6 +46,7 @@ function App() {
         <Route path="/shipping" element={<Shipping />} />
         <Route path="/returns" element={<Returns />} />
         <Route path="/track-order" element={<TrackOrder />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
