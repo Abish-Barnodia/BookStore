@@ -79,7 +79,7 @@ export default function CategoryPage({ title, icon, category }) {
     <div className="cat-page">
       <div className="cat-header">
         <div className="cat-header-left">
-          <button className="cat-back-btn" onClick={() => navigate('/')}>{'<-'}</button>
+          <button className="cat-back-btn" onClick={() => navigate('/dashboard')}>{'<-'}</button>
           <div>
             <h1 className="cat-title">{icon} {title}</h1>
             <p className="cat-count">{books.length} books available</p>
