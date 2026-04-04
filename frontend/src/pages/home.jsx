@@ -204,6 +204,9 @@ function Home() {
     return [...featuredBooks, ...featuredBooks];
   }, [featuredBooks]);
 
+  const joinFreeTarget = authUser || authToken ? '/profile' : '/signup';
+  const joinFreeLabel = authUser || authToken ? 'My Profile' : 'Join Free';
+
   const categoryCounts = useMemo(() => {
     const counts = new Map();
 
@@ -357,7 +360,7 @@ function Home() {
               >
                 Browse Collection
               </a>
-              <Link to="/signup" className="btn-hero-secondary">Join Free</Link>
+              <Link to={joinFreeTarget} className="btn-hero-secondary">{joinFreeLabel}</Link>
             </div>
             <div className="hero-stats">
               <div className="stat-item">
