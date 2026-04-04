@@ -59,7 +59,7 @@ export default function Cart() {
             <div className="cart-empty-icon">📚</div>
             <h2 className="cart-empty-title">Your cart is empty</h2>
             <p className="cart-empty-desc">Browse our categories and add books you love!</p>
-            <button className="cart-browse-btn" onClick={() => navigate('/')}>
+            <button className="cart-browse-btn" onClick={() => navigate('/dashboard')}>
               Browse Books
             </button>
           </div>
