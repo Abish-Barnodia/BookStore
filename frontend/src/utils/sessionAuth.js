@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const AUTH_TOKEN_KEY = 'bookstore_auth_token';
+const CHECKOUT_DRAFT_KEY = 'bookstore_checkout_draft';
 
 export const getAuthToken = () => {
   try {
@@ -34,5 +35,32 @@ export const bootstrapAuthToken = () => {
   const token = getAuthToken();
   if (token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  }
+};
+
+export const getCheckoutDraft = () => {
+  try {
+    const raw = sessionStorage.getItem(CHECKOUT_DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const setCheckoutDraft = (draft) => {
+  try {
+    if (draft && typeof draft === 'object') {
+      sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
+    }
+  } catch {
+    // Ignore storage failures.
+  }
+};
+
+export const clearCheckoutDraft = () => {
+  try {
+    sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
+  } catch {
+    // Ignore storage failures.
   }
 };

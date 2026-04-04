@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { authDataContext } from '../context/authContex';
 import { getApiErrorMessage } from '../utils/apiError';
-import { getAuthToken } from '../utils/sessionAuth';
+import { clearCheckoutDraft, getAuthToken, getCheckoutDraft, setCheckoutDraft } from '../utils/sessionAuth';
 
 const loadRazorpayScript = async () => {
   if (window.Razorpay) return;
@@ -25,6 +25,15 @@ function PlaceOrder() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const authToken = getAuthToken();
+
+  const [form, setForm] = useState(() => ({
+    name: '',
+    email: '',
+    address: '',
+    phone: '',
+    paymentMethod: 'cash',
+    ...getCheckoutDraft(),
+  }));
 
   useEffect(() => {
     // Protect this route: user must be logged in to place an order.
@@ -53,14 +62,11 @@ function PlaceOrder() {
     };
 
     checkAuth();
-  }, [navigate, serverUrl]);
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    address: '',
-    phone: '',
-    paymentMethod: 'cash',
-  });
+  }, [navigate, serverUrl, authToken]);
+
+  useEffect(() => {
+    setCheckoutDraft(form);
+  }, [form]);
 
   const mappedItems = useMemo(
     () =>
@@ -150,6 +156,7 @@ function PlaceOrder() {
               if (verifyRes.data?.success) {
                 setSuccess('Payment successful! Order placed.');
                 clearCart();
+                clearCheckoutDraft();
                 setTimeout(() => navigate('/dashboard'), 1200);
               } else {
                 setError(verifyRes.data?.message || 'Payment verification failed');
@@ -188,6 +195,7 @@ function PlaceOrder() {
 
         setSuccess('Order placed successfully!');
         clearCart();
+        clearCheckoutDraft();
         setTimeout(() => navigate('/dashboard'), 1200);
       }
     } catch (err) {
