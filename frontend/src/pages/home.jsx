@@ -272,6 +272,12 @@ function Home() {
     return stars;
   };
 
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div>
       {/* ═══════════ NAVBAR ═══════════ */}
@@ -281,10 +287,10 @@ function Home() {
         </Link>
 
         <ul className="nav-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#featured">Books</a></li>
-          <li><a href="#categories">Categories</a></li>
-          <li><a href="#newsletter">Contact</a></li>
+          <li><a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>Home</a></li>
+          <li><a href="#featured" onClick={(e) => { e.preventDefault(); scrollToSection('featured'); }}>Books</a></li>
+          <li><a href="#categories" onClick={(e) => { e.preventDefault(); scrollToSection('categories'); }}>Categories</a></li>
+          <li><a href="#newsletter" onClick={(e) => { e.preventDefault(); scrollToSection('newsletter'); }}>Contact</a></li>
         </ul>
 
         <div className="nav-actions">
@@ -341,7 +347,16 @@ function Home() {
               read is waiting for you.
             </p>
             <div className="hero-actions">
-              <a href="#featured" className="btn-hero-primary">Browse Collection</a>
+              <a
+                href="#featured"
+                className="btn-hero-primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection('featured');
+                }}
+              >
+                Browse Collection
+              </a>
               <Link to="/signup" className="btn-hero-secondary">Join Free</Link>
             </div>
             <div className="hero-stats">
