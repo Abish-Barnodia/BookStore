@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { authDataContext } from '../context/authContex';
@@ -214,7 +214,7 @@ function PlaceOrder() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="ornament">⚜</div>
-        <Link to="/cart" className="back-link">← Back to cart</Link>
+        <button onClick={() => navigate('/cart')} className="back-link">← Back to cart</button>
         <h1 className="auth-title">Place Order</h1>
         <p className="auth-subtitle">Total: ₹{totalAmount.toLocaleString('en-IN')}</p>
         <hr className="auth-divider" />
