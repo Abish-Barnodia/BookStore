@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { authDataContext } from '../context/authContex';
 import { getApiErrorMessage } from '../utils/apiError';
+import { getAuthToken } from '../utils/sessionAuth';
 
 const loadRazorpayScript = async () => {
   if (window.Razorpay) return;
@@ -23,6 +24,7 @@ function PlaceOrder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const authToken = getAuthToken();
 
   useEffect(() => {
     // Protect this route: user must be logged in to place an order.
@@ -31,7 +33,10 @@ function PlaceOrder() {
         const res = await axios.post(
           serverUrl + 'api/user/get-user',
           {},
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+          }
         );
         const user = res.data?.user;
 
@@ -101,7 +106,10 @@ function PlaceOrder() {
             customerName: form.name,
             customerEmail: form.email,
           },
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+          }
         );
 
         if (!data?.success) {
@@ -133,7 +141,10 @@ function PlaceOrder() {
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                 },
-                { withCredentials: true }
+                {
+                  withCredentials: true,
+                  headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+                }
               );
 
               if (verifyRes.data?.success) {
@@ -169,7 +180,10 @@ function PlaceOrder() {
             customerName: form.name,
             customerEmail: form.email,
           },
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+          }
         );
 
         setSuccess('Order placed successfully!');

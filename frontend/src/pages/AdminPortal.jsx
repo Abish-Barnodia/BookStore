@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authDataContext } from '../context/authContex';
+import { getAuthToken } from '../utils/sessionAuth';
 
 function AdminPortal() {
   const { serverUrl } = useContext(authDataContext);
@@ -11,10 +12,17 @@ function AdminPortal() {
   const [error, setError] = useState('');
 
   const adminTargetUrl = useMemo(() => {
-    const adminBaseUrl = (import.meta.env.VITE_ADMIN_APP_URL || 'https://bookstore-admin-3wc7.onrender.com').replace(/\/$/, '');
+    const envAdminBase = (import.meta.env.VITE_ADMIN_APP_URL || '').replace(/\/$/, '');
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const envIsLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(envAdminBase);
+    const adminBaseUrl = envAdminBase && !(envIsLocal && !isLocalHost)
+      ? envAdminBase
+      : 'https://bookstore-admin-3wc7.onrender.com';
     const pathWithoutAdmin = location.pathname.replace(/^\/admin/, '') || '/';
     const query = location.search || '';
-    return `${adminBaseUrl}${pathWithoutAdmin.startsWith('/') ? pathWithoutAdmin : `/${pathWithoutAdmin}`}${query}`;
+    const token = getAuthToken();
+    const tokenHash = token ? `#authToken=${encodeURIComponent(token)}` : '';
+    return `${adminBaseUrl}${pathWithoutAdmin.startsWith('/') ? pathWithoutAdmin : `/${pathWithoutAdmin}`}${query}${tokenHash}`;
   }, [location.pathname, location.search]);
 
   useEffect(() => {
@@ -25,7 +33,11 @@ function AdminPortal() {
         const res = await axios.post(
           `${serverUrl}api/user/get-user`,
           {},
-          { withCredentials: true, timeout: 8000 }
+          {
+            withCredentials: true,
+            timeout: 8000,
+            headers: getAuthToken() ? { Authorization: `Bearer ${getAuthToken()}` } : {},
+          }
         );
 
         if (cancelled) return;

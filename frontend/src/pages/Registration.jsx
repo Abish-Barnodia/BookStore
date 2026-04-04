@@ -6,6 +6,7 @@ import { signInWithPopup } from 'firebase/auth';
 
 import { auth, provider } from "../utils/Firebase";
 import { getApiErrorMessage } from "../utils/apiError";
+import { setAuthToken } from '../utils/sessionAuth';
 
 const GOOGLE_ICON = "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg";
 
@@ -53,11 +54,12 @@ function Registration() {
   const handleGoogleCredential = async (credential) => {
     if (!credential?.user) return;
     const idToken = await credential.user.getIdToken();
-    await axios.post(
+    const res = await axios.post(
       serverUrl + 'api/auth/google-login',
       { idToken },
       { withCredentials: true }
     );
+    setAuthToken(res?.data?.token || '');
     navigate(redirectTo);
   };
 
@@ -100,6 +102,7 @@ function Registration() {
       );
       console.log(res.data);
       // Registration already creates a session cookie; continue as logged in.
+      setAuthToken(res?.data?.token || '');
       navigate(redirectTo);
     } catch (err) {
       setError(getApiErrorMessage(err, 'Unable to connect to server'));

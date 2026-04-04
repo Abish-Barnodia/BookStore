@@ -5,6 +5,7 @@ import axios from 'axios';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../utils/Firebase';
 import { getApiErrorMessage } from '../utils/apiError';
+import { setAuthToken } from '../utils/sessionAuth';
 
 const GOOGLE_ICON = "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg";
 
@@ -15,12 +16,19 @@ function Login() {
   const searchParams = new URLSearchParams(location.search || '');
   const adminRedirectTo = searchParams.get('redirectTo') || '/';
   const redirectTo = location.state?.redirectTo || searchParams.get('redirectTo') || '/dashboard';
-  const adminAppBaseUrl = (import.meta.env.VITE_ADMIN_APP_URL || 'https://bookstore-admin-3wc7.onrender.com').replace(/\/$/, '');
+  const envAdminBase = (import.meta.env.VITE_ADMIN_APP_URL || '').replace(/\/$/, '');
+  const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const envIsLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(envAdminBase);
+  const adminAppBaseUrl = envAdminBase && !(envIsLocal && !isLocalHost)
+    ? envAdminBase
+    : 'https://bookstore-admin-3wc7.onrender.com';
 
   const getAdminRoute = () => {
     const normalized = adminRedirectTo.startsWith('/') ? adminRedirectTo : `/${adminRedirectTo}`;
     return `${adminAppBaseUrl}${normalized}`;
   };
+
+  const getAdminRedirectUrl = (token) => `${getAdminRoute()}${token ? `#authToken=${encodeURIComponent(token)}` : ''}`;
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,9 +58,11 @@ function Login() {
     );
     const role = res?.data?.user?.role;
     if (role === 'admin' || role === 'super-admin') {
-      window.location.href = getAdminRoute();
+      setAuthToken(res?.data?.token || '');
+      window.location.href = getAdminRedirectUrl(res?.data?.token || '');
       return;
     }
+    setAuthToken(res?.data?.token || '');
     navigate(redirectTo);
   };
 
@@ -80,9 +90,11 @@ function Login() {
       );
       const role = res?.data?.user?.role;
       if (role === 'admin' || role === 'super-admin') {
-        window.location.href = getAdminRoute();
+        setAuthToken(res?.data?.token || '');
+        window.location.href = getAdminRedirectUrl(res?.data?.token || '');
         return;
       }
+      setAuthToken(res?.data?.token || '');
       navigate(redirectTo);
     } catch (err) {
       const status = err?.response?.status;
@@ -98,7 +110,8 @@ function Login() {
           );
           const adminRole = adminRes?.data?.user?.role;
           if (adminRole === 'admin' || adminRole === 'super-admin') {
-            window.location.href = getAdminRoute();
+            setAuthToken(adminRes?.data?.token || '');
+            window.location.href = getAdminRedirectUrl(adminRes?.data?.token || '');
             return;
           }
         } catch (adminErr) {

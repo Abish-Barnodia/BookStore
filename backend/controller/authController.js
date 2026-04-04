@@ -341,6 +341,7 @@ export const Registration = async (req, res) => {
             success: true,
             message: "Account created successfully",
             user: toPublicUser(user),
+            token,
         });
     } catch (error) {
         console.error("Registration:", error);
@@ -467,6 +468,7 @@ export const Login = async (req, res) => {
                     name: admin.name,
                     role: admin.role,
                 },
+                token,
             });
         }
 
@@ -655,6 +657,7 @@ export const googleLogin = async (req, res) => {
             success: true,
             message: "Login successful",
             user: toPublicUser(fresh),
+            token,
         });
     } catch (error) {
         console.error("googleLogin:", error);
@@ -824,6 +827,7 @@ export const adminLogin = async (req, res) => {
                 name: admin.name,
                 role: admin.role,
             },
+            token,
         });
     } catch (error) {
         console.error("adminLogin:", error);

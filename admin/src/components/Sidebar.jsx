@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { authDataContext } from '../context/AuthContext';
+import { clearAuthToken } from '../utils/sessionAuth';
 
 const NAV_ITEMS = [
   { to: '/',          icon: '📊', label: 'Dashboard'  },
@@ -27,6 +28,7 @@ function Sidebar({ open, onNavigate }) {
     } catch {
       /* still leave admin UI */
     }
+    clearAuthToken();
     window.location.replace(sharedLoginUrl);
   };
 

@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import { authDataContext } from '../context/authContex';
+import { getAuthToken } from '../utils/sessionAuth';
 
 export default function Cart() {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity, clearCart, totalItems, totalAmount } = useCart();
   const { serverUrl } = useContext(authDataContext);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const authToken = getAuthToken();
 
   const handleCheckout = async () => {
     try {
@@ -18,7 +20,10 @@ export default function Cart() {
       await axios.post(
         serverUrl + 'api/user/get-user',
         {},
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+        }
       );
 
       navigate('/place-order');

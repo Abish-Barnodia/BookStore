@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { authDataContext } from '../context/authContex';
 import { useCart } from '../context/CartContext';
+import { clearAuthToken, getAuthToken } from '../utils/sessionAuth';
 
 /* ─── Book Data ─── */
 const FEATURED_BOOKS = [
@@ -128,6 +129,7 @@ function Home() {
   const [inventoryLoading, setInventoryLoading] = useState(true);
   const [inventoryError, setInventoryError] = useState('');
   const searchResultsRef = useRef(null);
+  const authToken = getAuthToken();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -142,7 +144,10 @@ function Home() {
         const res = await axios.post(
           serverUrl + 'api/user/get-user',
           {},
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+          }
         );
         setAuthUser(res.data?.user || null);
       } catch {
@@ -249,6 +254,7 @@ function Home() {
     } catch (err) {
       console.error('logout:', err);
     }
+    clearAuthToken();
     setAuthUser(null);
     navigate('/');
   };

@@ -2,10 +2,12 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { authDataContext } from '../context/authContex';
+import { clearAuthToken, getAuthToken } from '../utils/sessionAuth';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { serverUrl } = useContext(authDataContext);
+  const authToken = getAuthToken();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,7 +44,10 @@ export default function Profile() {
     const res = await axios.post(
       serverUrl + 'api/user/get-user',
       {},
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+      }
     );
     return res.data?.user || null;
   };
@@ -50,7 +55,10 @@ export default function Profile() {
   const fetchOrders = async () => {
     const res = await axios.get(
       serverUrl + 'api/order/my-orders',
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+      }
     );
     return res.data?.orders || [];
   };
@@ -124,7 +132,10 @@ export default function Profile() {
           email: form.email,
           address: form.address || '',
         },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+        }
       );
 
       // Refresh user after update
@@ -151,6 +162,7 @@ export default function Profile() {
       // Even if logout fails, we still clear UI and redirect
       console.error('logout:', err);
     }
+    clearAuthToken();
     navigate('/login');
   };
 
@@ -199,7 +211,10 @@ export default function Profile() {
       await axios.post(
         `${serverUrl}api/product/${reviewTarget.productId}/reviews`,
         formData,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+        }
       );
 
       setOrders((prev) =>
