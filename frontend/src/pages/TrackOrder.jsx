@@ -6,7 +6,7 @@ const TrackOrder = () => {
 
   return (
     <div className="info-page-container">
-      <button className="btn-back" onClick={() => navigate('/')}>← Back to Home</button>
+      <button className="btn-back" onClick={() => navigate('/dashboard')}>← Back to Home</button>
       
       <section className="info-page-section">
         <div className="section-header">
