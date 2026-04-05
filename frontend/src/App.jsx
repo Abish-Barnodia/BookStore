@@ -34,7 +34,6 @@ import { clearAuthToken, getAuthToken } from './utils/sessionAuth';
 function RequireAuth({ children }) {
   const location = useLocation();
   const { serverUrl } = useContext(authDataContext);
-  const token = getAuthToken();
   const [checking, setChecking] = useState(true);
   const [authorized, setAuthorized] = useState(false);
 
@@ -42,13 +41,7 @@ function RequireAuth({ children }) {
     let cancelled = false;
 
     const verifySession = async () => {
-      if (!token) {
-        if (!cancelled) {
-          setAuthorized(false);
-          setChecking(false);
-        }
-        return;
-      }
+      const token = getAuthToken();
 
       try {
         await axios.post(
@@ -56,14 +49,16 @@ function RequireAuth({ children }) {
           {},
           {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
           }
         );
         if (!cancelled) {
           setAuthorized(true);
         }
       } catch {
-        clearAuthToken();
+        if (token) {
+          clearAuthToken();
+        }
         if (!cancelled) {
           setAuthorized(false);
         }
@@ -79,7 +74,7 @@ function RequireAuth({ children }) {
     return () => {
       cancelled = true;
     };
-  }, [serverUrl, token]);
+  }, [serverUrl, location.pathname, location.search]);
 
   if (checking) {
     return null;
