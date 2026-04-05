@@ -3,7 +3,7 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import AuthContext from './context/AuthContext.jsx'
-import { bootstrapAuthToken, initAuthTabLifecycle, setAuthToken } from './utils/sessionAuth'
+import { bootstrapAuthToken, setAuthToken } from './utils/sessionAuth'
 
 try {
   const handoffRaw = window.name || ''
@@ -22,7 +22,6 @@ try {
 }
 
 bootstrapAuthToken()
-initAuthTabLifecycle()
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
