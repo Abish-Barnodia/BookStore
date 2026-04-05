@@ -43,22 +43,28 @@ function RequireAuth({ children }) {
     const verifySession = async () => {
       const token = getAuthToken();
 
+      if (!token) {
+        if (!cancelled) {
+          setAuthorized(false);
+          setChecking(false);
+        }
+        return;
+      }
+
       try {
         await axios.post(
           serverUrl + 'api/user/get-user',
           {},
           {
             withCredentials: true,
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (!cancelled) {
           setAuthorized(true);
         }
       } catch {
-        if (token) {
-          clearAuthToken();
-        }
+        clearAuthToken();
         if (!cancelled) {
           setAuthorized(false);
         }
