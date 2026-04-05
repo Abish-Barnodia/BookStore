@@ -28,7 +28,13 @@ function Login() {
     return `${adminAppBaseUrl}${normalized}`;
   };
 
-  const getAdminRedirectUrl = (token) => `${getAdminRoute()}${token ? `#authToken=${encodeURIComponent(token)}` : ''}`;
+  const getAdminRedirectUrl = () => getAdminRoute();
+
+  const handoffAdminToken = (token) => {
+    if (!token) return;
+    // Cross-origin handoff that avoids leaking auth in sharable URLs.
+    window.name = JSON.stringify({ adminAuthToken: token, issuedAt: Date.now() });
+  };
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,8 +64,10 @@ function Login() {
     );
     const role = res?.data?.user?.role;
     if (role === 'admin' || role === 'super-admin') {
-      setAuthToken(res?.data?.token || '');
-      window.location.href = getAdminRedirectUrl(res?.data?.token || '');
+      const token = res?.data?.token || '';
+      setAuthToken(token);
+      handoffAdminToken(token);
+      window.location.href = getAdminRedirectUrl();
       return;
     }
     setAuthToken(res?.data?.token || '');
@@ -90,8 +98,10 @@ function Login() {
       );
       const role = res?.data?.user?.role;
       if (role === 'admin' || role === 'super-admin') {
-        setAuthToken(res?.data?.token || '');
-        window.location.href = getAdminRedirectUrl(res?.data?.token || '');
+        const token = res?.data?.token || '';
+        setAuthToken(token);
+        handoffAdminToken(token);
+        window.location.href = getAdminRedirectUrl();
         return;
       }
       setAuthToken(res?.data?.token || '');
@@ -110,8 +120,10 @@ function Login() {
           );
           const adminRole = adminRes?.data?.user?.role;
           if (adminRole === 'admin' || adminRole === 'super-admin') {
-            setAuthToken(adminRes?.data?.token || '');
-            window.location.href = getAdminRedirectUrl(adminRes?.data?.token || '');
+            const token = adminRes?.data?.token || '';
+            setAuthToken(token);
+            handoffAdminToken(token);
+            window.location.href = getAdminRedirectUrl();
             return;
           }
         } catch (adminErr) {

@@ -1,5 +1,6 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { CartProvider } from './context/CartContext';
 import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
@@ -27,38 +28,101 @@ import Classic from './Categories/Classic.jsx';
 import History from './Categories/History.jsx';
 import Fantasy from './Categories/Fantasy.jsx';
 import General from './Categories/General.jsx';
+import { authDataContext } from './context/authContex';
+import { clearAuthToken, getAuthToken } from './utils/sessionAuth';
+
+function RequireAuth({ children }) {
+  const location = useLocation();
+  const { serverUrl } = useContext(authDataContext);
+  const token = getAuthToken();
+  const [checking, setChecking] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const verifySession = async () => {
+      if (!token) {
+        if (!cancelled) {
+          setAuthorized(false);
+          setChecking(false);
+        }
+        return;
+      }
+
+      try {
+        await axios.post(
+          serverUrl + 'api/user/get-user',
+          {},
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!cancelled) {
+          setAuthorized(true);
+        }
+      } catch {
+        clearAuthToken();
+        if (!cancelled) {
+          setAuthorized(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setChecking(false);
+        }
+      }
+    };
+
+    verifySession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [serverUrl, token]);
+
+  if (checking) {
+    return null;
+  }
+
+  if (!authorized) {
+    return <Navigate to="/login" replace state={{ redirectTo: location.pathname + (location.search || '') }} />;
+  }
+
+  return children;
+}
 
 function App() {
   return (
     <CartProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/dashboard" element={<Home />} />
+        <Route path="/dashboard" element={<RequireAuth><Home /></RequireAuth>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Registration />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/place-order" element={<PlaceOrder />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/book/:id" element={<BookView />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/shipping" element={<Shipping />} />
-        <Route path="/returns" element={<Returns />} />
-        <Route path="/track-order" element={<TrackOrder />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-of-service" element={<TermsOfService />} />
-        <Route path="/cookie-policy" element={<CookiePolicy />} />
-        <Route path="/admin/*" element={<AdminPortal />} />
-        <Route path="/self-help" element={<SelfHelp />} />
-        <Route path="/fiction" element={<Fiction />} />
-        <Route path="/sci-fi" element={<ScienceFiction />} />
-        <Route path="/finance" element={<Finance />} />
-        <Route path="/classic" element={<Classic />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/fantasy" element={<Fantasy />} />
-        <Route path="/general" element={<General />} />
+        <Route path="/cart" element={<RequireAuth><Cart /></RequireAuth>} />
+        <Route path="/place-order" element={<RequireAuth><PlaceOrder /></RequireAuth>} />
+        <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+        <Route path="/book/:id" element={<RequireAuth><BookView /></RequireAuth>} />
+        <Route path="/faq" element={<RequireAuth><FAQ /></RequireAuth>} />
+        <Route path="/shipping" element={<RequireAuth><Shipping /></RequireAuth>} />
+        <Route path="/returns" element={<RequireAuth><Returns /></RequireAuth>} />
+        <Route path="/track-order" element={<RequireAuth><TrackOrder /></RequireAuth>} />
+        <Route path="/contact" element={<RequireAuth><Contact /></RequireAuth>} />
+        <Route path="/privacy-policy" element={<RequireAuth><PrivacyPolicy /></RequireAuth>} />
+        <Route path="/terms-of-service" element={<RequireAuth><TermsOfService /></RequireAuth>} />
+        <Route path="/cookie-policy" element={<RequireAuth><CookiePolicy /></RequireAuth>} />
+        <Route path="/admin/*" element={<RequireAuth><AdminPortal /></RequireAuth>} />
+        <Route path="/self-help" element={<RequireAuth><SelfHelp /></RequireAuth>} />
+        <Route path="/fiction" element={<RequireAuth><Fiction /></RequireAuth>} />
+        <Route path="/sci-fi" element={<RequireAuth><ScienceFiction /></RequireAuth>} />
+        <Route path="/finance" element={<RequireAuth><Finance /></RequireAuth>} />
+        <Route path="/classic" element={<RequireAuth><Classic /></RequireAuth>} />
+        <Route path="/history" element={<RequireAuth><History /></RequireAuth>} />
+        <Route path="/fantasy" element={<RequireAuth><Fantasy /></RequireAuth>} />
+        <Route path="/general" element={<RequireAuth><General /></RequireAuth>} />
       </Routes>
     </CartProvider>
   );

@@ -11,6 +11,7 @@ import Users     from './pages/Users';
 import Profile   from './pages/Profile';
 import AccessDenied from './pages/AccessDenied';
 import { authDataContext } from './context/AuthContext';
+import { clearAuthToken, getAuthToken } from './utils/sessionAuth';
 import './App.css';
 
 function SharedLoginRedirect({ redirectTo = '/' }) {
@@ -78,14 +79,23 @@ function AdminGuard({ children }) {
     let retryCount = 0;
     const MAX_RETRIES = 5;
     const RETRY_DELAY_MS = 1000; // 1 second between retries
+    const token = getAuthToken();
 
     const checkAdmin = async () => {
+      if (!token) {
+        setIsAuthenticated(false);
+        setIsAdmin(false);
+        setChecking(false);
+        return;
+      }
+
       try {
         const res = await axios.post(
           `${serverUrl}api/user/get-user`,
           {},
           { 
             withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
             timeout: 8000 // 8 second timeout per request
           }
         );
@@ -125,6 +135,7 @@ function AdminGuard({ children }) {
           setIsAdmin(false);
         } else if (status === 401) {
           setBackendError(null); // Not logged in is fine
+          clearAuthToken();
           setIsAuthenticated(false);
           setIsAdmin(false);
         } else if (status === 403) {
