@@ -537,6 +537,7 @@ export const Login = async (req, res) => {
             success: true,
             message: "Login successful",
             user: toPublicUser(user),
+            token,
         });
     } catch (error) {
         console.error("Login:", error);
